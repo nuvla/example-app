@@ -37,8 +37,8 @@ services:
       - NUVLA_API_KEY=$NUVLA_API_KEY
       - NUVLA_API_SECRET=$NUVLA_API_SECRET
     configs:
-      - source: Nuvla-app-demo
-        target: /home/jovyan/Nuvla-app-demo.ipynb
+      - source: nuvla-app-demo
+        target: /home/jovyan/nuvla-app-demo.ipynb
     secrets:
       - jupyter_token
     command: bash -c "/usr/local/bin/start-notebook.sh --NotebookApp.token=$$(cat /run/secrets/jupyter_token)"
@@ -52,5 +52,5 @@ configs:
     file: ./index.html
   my_config:
     file: ./my_config.txt
-  Nuvla-app-demo:
-    file: ./Nuvla-app-demo.ipynb
+  nuvla-app-demo:
+    file: ./nuvla-app-demo.ipynb
