@@ -1,0 +1,73 @@
+{
+  "description" : "An application composed of two services for demo and learning purpose.  The goal is to show how user can use env variables, secrets, config files, urls and output parameters. We didn't build custom images to make everything visible to the end  user.",
+  "path" : "examples/my-first-application",
+  "content" : {
+    "urls" : [ [ "Nginx simple", "http://${hostname}:${nginx_simple.tcp.80}" ], [ "Jupyter advanced", "http://${hostname}:${jupyter_advanced.tcp.8888}" ] ],
+    "environmental-variables" : [ {
+      "name" : "MY_ENV",
+      "required" : false,
+      "value" : "my env value",
+      "description" : "application defined env variable"
+    }, {
+      "name" : "GIVE_ME_SOME_INPUT",
+      "required" : true,
+      "description" : "Required env example"
+    } ],
+    "updated" : "2019-07-29T12:04:21.735Z",
+    "created" : "2019-07-29T12:04:21.735Z",
+    "output-parameters" : [ {
+      "name" : "edit-me",
+      "description" : "param to be set"
+    } ],
+    "author" : "super",
+    "id" : "module-application/86c4d906-9a37-4170-b62e-4e8dab2f6819",
+    "commit" : "Make this application visible to nuvla users",
+    "files" : [ {
+      "file-name" : "jupyter_token.txt",
+      "file-content" : "token-from-secret"
+    }, {
+      "file-name" : "index.html",
+      "file-content" : "<!DOCTYPE html>
+<html>
+<head>\n<title>Welcome to nuvla!</title>\n<style>\n    body {\n        width: 35em;\n        margin: 0 auto;\n        font-family: Tahoma, Verdana, Arial, sans-serif;\n    }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx FROM NUVLA!</h1>\n<p>If you see this page, the nginx web server is successfully installed and\nworking.</p>\n\n<h3>Env</h3>\n<iframe src=\"env.txt\" width=\"100%\" height=\"300px\"></iframe>\n<br/>\n\n<h3>my_config.txt</h3>\n<iframe src=\"my_config.txt\" width=\"100%\" height=\"100px\"></iframe>\n<br/>\n\n<p>\n<b>Cool right! Now Let's go further:</b> <br/><br/>\n<em>click on second url in Nuvla UI to open a Jupyter Notebook to interact with!</em>\nThe secret token is in your Deployment files jupyter_token.txt. \nBy the Way you can change the value of this secret at runtime.\n</p>\n</body>\n</html>"
+    }, {
+      "file-name" : "my_config.txt",
+      "file-content" : "my_config content\n1\n2\n3\n"
+    }, {
+      "file-name" : "Nuvla-app-demo.ipynb",
+      "file-content" : "{\n \"cells\": [\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"# Fetch nginx page with page info. Stack inter-stack services can communicate by their names.\\n\",\n    \"\\n\",\n    \"import urllib.request\\n\",\n    \"f = urllib.request.urlopen(\\\"http://nginx_simple\\\")\\n\",\n    \"print(f.read())\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"pip install nuvla-api\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"import os\\n\",\n    \"\\n\",\n    \"#\\n\",\n    \"# Read the configuration from the environment.\\n\",\n    \"#\\n\",\n    \"\\n\",\n    \"endpoint = os.getenv('NUVLA_ENDPOINT')\\n\",\n    \"api_key = os.getenv('NUVLA_API_KEY')\\n\",\n    \"api_secret = os.getenv('NUVLA_API_SECRET')\\n\",\n    \"deployment_id = os.getenv('NUVLA_DEPLOYMENT_ID')\\n\",\n    \"\\n\",\n    \"#\\n\",\n    \"# Ensure complete environment or bail out.\\n\",\n    \"#\\n\",\n    \"\\n\",\n    \"if (endpoint is None or\\n\",\n    \"    api_key is None or\\n\",\n    \"    api_secret is None or\\n\",\n    \"    deployment_id is None):\\n\",\n    \"  print(\\\"Missing required configuration information; skipping nuvla integration...\\\")\\n\",\n    \"else:\\n\",\n    \"    print('Your are using Nuvla: {}'.format(endpoint))\\n\",\n    \"    print('Your deployment ID is: {}'.format(deployment_id))\\n\",\n    \"    print('Your deployment can access your objects on Nuvla by login with token: {}'.format(api_key))\\n\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {\n    \"scrolled\": true\n   },\n   \"outputs\": [],\n   \"source\": [\n    \"from nuvla.api import Api\\n\",\n    \"\\n\",\n    \"#\\n\",\n    \"# setup the Nuvla API\\n\",\n    \"#\\n\",\n    \"\\n\",\n    \"api = Api(endpoint=endpoint, insecure=True)\\n\",\n    \"api.login_apikey(api_key, api_secret)\\n\",\n    \"\\n\",\n    \"print('Token roles are following:\\\\n\\\\n{}'.format(api.get('session').data['resources'][0].get('roles').split(' ')))\\n\",\n    \"\\n\",\n    \"# Recover deployment information. \\n\",\n    \"\\n\",\n    \"deployment = api.get(deployment_id)\\n\",\n    \"\\n\",\n    \"print('\\\\n\\\\nDeployment info:\\\\n')\\n\",\n    \"print(deployment)\\n\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"param = api.search('deployment-parameter', filter='parent=\\\"{}\\\" and name=\\\"edit-me\\\"'.format(deployment_id)).data['resources'][0]\\n\",\n    \"param\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"param_id = param['id']\\n\",\n    \"param_value = param.get('value')\\n\",\n    \"print(param_value)\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"api.edit(param_id, {'value': 'yes, I can edit this param'})\\n\",\n    \"print('Check in Nuvla UI if this parameter value changed to: {}'.format(api.get(param_id).data['value']))\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": []\n  }\n ],\n \"metadata\": {\n  \"kernelspec\": {\n   \"display_name\": \"Python 3\",\n   \"language\": \"python\",\n   \"name\": \"python3\"\n  },\n  \"language_info\": {\n   \"codemirror_mode\": {\n    \"name\": \"ipython\",\n    \"version\": 3\n   },\n   \"file_extension\": \".py\",\n   \"mimetype\": \"text/x-python\",\n   \"name\": \"python\",\n   \"nbconvert_exporter\": \"python\",\n   \"pygments_lexer\": \"ipython3\",\n   \"version\": \"3.7.3\"\n  }\n },\n \"nbformat\": 4,\n \"nbformat_minor\": 2\n}\n"
+    } ],
+    "docker-compose" : "version: \"3.7\"\n\nservices:\n  nginx_simple:\n    image: nginx:latest\n    ports:\n      - 80\n    configs:\n      - source: index\n        target: /usr/share/nginx/html/index.html\n      - my_config\n    environment:\n      - ENV_1=\"Hello World\"\n      # This is a variable is taken from deployment environmental variables. They can be edited at runtime\n      - MY_ENV=$MY_ENV\n      - MY_ENV_COPY=$MY_ENV\n      - GIVE_ME_SOME_INPUT=$GIVE_ME_SOME_INPUT\n      # NUVLA_... generated variables allow a service to edit the deployment and deployment parameters.\n      # If you need them just add them to the service \"environment\" to make them available to it. \n      - NUVLA_DEPLOYMENT_ID=$NUVLA_DEPLOYMENT_ID\n      - NUVLA_ENDPOINT=$NUVLA_ENDPOINT\n      - NUVLA_API_KEY=$NUVLA_API_KEY\n      - NUVLA_API_SECRET='***** no will not make this available for everyone :P'\n    command: bash -c \"\n      env > /usr/share/nginx/html/env.txt;\n      cat /my_config > /usr/share/nginx/html/my_config.txt;\n      nginx -g 'daemon off;'\n      \"\n\n  jupyter_advanced:\n    image: jupyter/minimal-notebook:latest\n    ports:\n      - 8888\n    environment:\n      - NUVLA_DEPLOYMENT_ID=$NUVLA_DEPLOYMENT_ID\n      - NUVLA_ENDPOINT=$NUVLA_ENDPOINT\n      - NUVLA_API_KEY=$NUVLA_API_KEY\n      - NUVLA_API_SECRET=$NUVLA_API_SECRET\n    configs:\n      - source: Nuvla-app-demo\n        target: /home/jovyan/Nuvla-app-demo.ipynb\n    secrets:\n      - jupyter_token\n    command: bash -c \"/usr/local/bin/start-notebook.sh --NotebookApp.token=$$(cat /run/secrets/jupyter_token)\"\n\nsecrets:\n  jupyter_token:\n    file: ./jupyter_token.txt\n\nconfigs:\n  index:\n    file: ./index.html\n  my_config:\n    file: ./my_config.txt\n  Nuvla-app-demo:\n    file: ./Nuvla-app-demo.ipynb\n"
+  },
+  "updated" : "2019-07-29T12:04:21.789Z",
+  "name" : "My first application",
+  "created" : "2019-07-29T07:26:21.360Z",
+  "parent-path" : "examples",
+  "data-accept-content-types" : [ ],
+  "id" : "module/f34b5882-45b5-4eb3-95a2-bc7fd236b8ff",
+  "resource-type" : "module",
+  "acl" : {
+    "view-meta" : [ "group/nuvla-user" ],
+    "view-data" : [ "group/nuvla-user" ],
+    "owners" : [ "group/nuvla-admin" ]
+  },
+  "operations" : [ {
+    "rel" : "edit",
+    "href" : "module/f34b5882-45b5-4eb3-95a2-bc7fd236b8ff"
+  }, {
+    "rel" : "delete",
+    "href" : "module/f34b5882-45b5-4eb3-95a2-bc7fd236b8ff"
+  } ],
+  "logo-url" : "/ui/images/noimage.png",
+  "versions" : [ {
+    "href" : "module-application/506df2fb-b500-4ac1-9ab8-2097b77b0438",
+    "author" : "super",
+    "commit" : "Fist implementation"
+  }, {
+    "href" : "module-application/86c4d906-9a37-4170-b62e-4e8dab2f6819",
+    "author" : "super",
+    "commit" : "Make this application visible to nuvla users"
+  } ],
+  "subtype" : "application"
+}
+

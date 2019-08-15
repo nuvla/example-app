@@ -1,0 +1,56 @@
+version: "3.7"
+
+services:
+  nginx_simple:
+    image: nginx:latest
+    ports:
+      - 80
+    configs:
+      - source: index
+        target: /usr/share/nginx/html/index.html
+      - my_config
+    environment:
+      - ENV_1="Hello World"
+      # This is a variable is taken from deployment environmental variables. They can be edited at runtime
+      - MY_ENV=$MY_ENV
+      - MY_ENV_COPY=$MY_ENV
+      - GIVE_ME_SOME_INPUT=$GIVE_ME_SOME_INPUT
+      # NUVLA_... generated variables allow a service to edit the deployment and deployment parameters.
+      # If you need them just add them to the service "environment" to make them available to it. 
+      - NUVLA_DEPLOYMENT_ID=$NUVLA_DEPLOYMENT_ID
+      - NUVLA_ENDPOINT=$NUVLA_ENDPOINT
+      - NUVLA_API_KEY=$NUVLA_API_KEY
+      - NUVLA_API_SECRET='***** no will not make this available for everyone :P'
+    command: bash -c "
+      env > /usr/share/nginx/html/env.txt;
+      cat /my_config > /usr/share/nginx/html/my_config.txt;
+      nginx -g 'daemon off;'
+      "
+
+  jupyter_advanced:
+    image: jupyter/minimal-notebook:latest
+    ports:
+      - 8888
+    environment:
+      - NUVLA_DEPLOYMENT_ID=$NUVLA_DEPLOYMENT_ID
+      - NUVLA_ENDPOINT=$NUVLA_ENDPOINT
+      - NUVLA_API_KEY=$NUVLA_API_KEY
+      - NUVLA_API_SECRET=$NUVLA_API_SECRET
+    configs:
+      - source: Nuvla-app-demo
+        target: /home/jovyan/Nuvla-app-demo.ipynb
+    secrets:
+      - jupyter_token
+    command: bash -c "/usr/local/bin/start-notebook.sh --NotebookApp.token=$$(cat /run/secrets/jupyter_token)"
+
+secrets:
+  jupyter_token:
+    file: ./jupyter_token.txt
+
+configs:
+  index:
+    file: ./index.html
+  my_config:
+    file: ./my_config.txt
+  Nuvla-app-demo:
+    file: ./Nuvla-app-demo.ipynb
