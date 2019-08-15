@@ -22,13 +22,16 @@ can use environmental variables, secrets, configuration files, urls,
 and output parameters. To make everything visible in this application
 definition, no custom images have been used."""
 
-with open('docker-compose.yml') as x: docker_compose = x.read()
+def relative_file(filename):
+    return os.path.join(os.path.dirname(__file__), filename)
 
-with open('index.html') as x: index_html = x.read()
+with open(relative_file('docker-compose.yml')) as x: docker_compose = x.read()
 
-with open('my_config.txt') as x: my_config_txt = x.read()
+with open(relative_file('index.html')) as x: index_html = x.read()
 
-with open('nuvla-app-demo.ipynb') as x: nuvla_app_demo_ipynb = x.read()
+with open(relative_file('my_config.txt')) as x: my_config_txt = x.read()
+
+with open(relative_file('nuvla-app-demo.ipynb')) as x: nuvla_app_demo_ipynb = x.read()
 
 application = {
     "author" : "sixsq",
