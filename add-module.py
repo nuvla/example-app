@@ -80,7 +80,7 @@ module = {"name": "My first application",
           "logo-url": "/ui/images/noimage.png",
           "subtype": "application",
           
-          "path": "examples/my-first-application-cal",
+          "path": "examples/my-first-application",
           "parent-path": "examples",
           
           "data-accept-content-types": ["application/octet-stream"],
