@@ -79,7 +79,7 @@ module = {"name": "My first application",
           "description": description,
           "logo-url": "/ui/images/noimage.png",
           "subtype": "application",
-          
+          "compatibility": "swarm",
           "path": "examples/my-first-application",
           "parent-path": "examples",
           
